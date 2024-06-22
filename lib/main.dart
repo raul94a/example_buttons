@@ -1,6 +1,7 @@
 import 'package:example_buttons/buttons/action_button.dart';
 import 'package:example_buttons/extension/context_extensions.dart';
 import 'package:example_buttons/mixin/widget_state_property.dart';
+import 'package:example_buttons/stack_bckg/profile_background.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,12 +13,20 @@ class MainApp extends StatelessWidget with WidgetStatePropertyMixin {
 
   @override
   Widget build(BuildContext context) {
+    const env = String.fromEnvironment('ENVIRONMENT');
+    const baseurl = String.fromEnvironment('BASE_URL');
+    const authapi = String.fromEnvironment('AUTH_API');
+    const citas = String.fromEnvironment('CITAS_API');
     return MaterialApp(
-      home: Scaffold(
+      home: true ? ProfileScreen() : Scaffold(
         appBar: AppBar(),
         body: Center(
             child: Column(
           children: [
+            const Text(env),
+            const Text(baseurl),
+            const Text(authapi),
+            const Text(citas),
             ActionButton(
                 text: 'Consulta',
                 textStyle: context.bodyMedium.copyWith(color: Colors.white),

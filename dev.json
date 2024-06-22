@@ -1,0 +1,6 @@
+{
+    "ENVIRONMENT": "dev",
+    "BASE_URL": "MY_BASE_URL_DEV",
+    "AUTH_API": "AUTH_API_SERVICE_DEV",
+    "CITAS_API": "AUTH_CITAS_API_dEV" 
+}
