@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CustomWeekCalendar extends StatefulWidget {
   const CustomWeekCalendar({
@@ -68,31 +69,47 @@ class _CustomWeekCalendarState extends State<CustomWeekCalendar> {
               )
             ],
           ),
-          Row(
-            children: List.from(['L', 'M', 'M', 'J', 'V', 'S', 'D'])
-                .map((el) => Expanded(child: Text(el)))
-                .toList(),
+          Container(
+            width: double.infinity,
+            color: Colors.blue,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(7, (i) {
+                  final weekdaystr = DateFormat('EEE', 'es')
+                      .format(firstDateCalendar.add(Duration(days: i + 1)));
+                  return Expanded(
+                      child: Text(
+                    weekdaystr,
+                    textAlign: TextAlign.center,
+                  ));
+                })),
           ),
-          Expanded(
-            child: PageView.builder(
-                controller: pageController,
-                itemCount: 400,
-                onPageChanged: (value) {
-                  final daysToAdd = 7 * value;
-                  setState(() {
-                    currentDate =
-                        firstDateCalendar.add(Duration(days: daysToAdd));
-                  });
-                },
-                itemBuilder: (ctx, i) {
-                  return _DayPicker(
-                      currentDate: currentDate,
-                      firstDate: widget.firstDate,
-                      lastDate: widget.lastDate,
-                      selectedDate: selectedDate,
-                      onChanged: widget.onSelectedDate);
-                }),
-          )
+          Container(
+              color: Colors.yellow,
+              height: 70,
+              child: PageView.builder(
+                  controller: pageController,
+                  itemCount: 400,
+                  onPageChanged: (value) {
+                    final daysToAdd = 7 * value;
+                    setState(() {
+                      currentDate =
+                          firstDateCalendar.add(Duration(days: daysToAdd));
+                    });
+                  },
+                  itemBuilder: (ctx, i) {
+                    return _DayPicker(
+                        currentDate: currentDate,
+                        firstDate: widget.firstDate,
+                        lastDate: widget.lastDate,
+                        selectedDate: selectedDate,
+                        onChanged: (date) {
+                          setState(() {
+                            selectedDate = date;
+                          });
+                          widget.onSelectedDate(date);
+                        });
+                  }))
         ],
       ),
     );
@@ -273,7 +290,7 @@ class _Day extends StatefulWidget {
 }
 
 class _DayState extends State<_Day> {
-  final MaterialStatesController _statesController = MaterialStatesController();
+  final WidgetStatesController _statesController = WidgetStatesController();
 
   @override
   Widget build(BuildContext context) {
@@ -285,9 +302,9 @@ class _DayState extends State<_Day> {
     }
 
     T? resolve<T>(
-        MaterialStateProperty<T>? Function(DatePickerThemeData? theme)
+        WidgetStateProperty<T>? Function(DatePickerThemeData? theme)
             getProperty,
-        Set<MaterialState> states) {
+        Set<WidgetState> states) {
       return effectiveValue(
         (DatePickerThemeData? theme) {
           return getProperty(theme)?.resolve(states);
@@ -302,7 +319,7 @@ class _DayState extends State<_Day> {
 
     final Set<WidgetState> states = <WidgetState>{
       if (widget.isDisabled) WidgetState.disabled,
-      if (widget.isSelectedDay) MaterialState.selected,
+      if (widget.isSelectedDay) WidgetState.selected,
     };
 
     _statesController.value = states;
