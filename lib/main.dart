@@ -1,3 +1,4 @@
+import 'package:example_buttons/bottom_navbar.dart/app_nav_bar.dart';
 import 'package:example_buttons/buttons/action_button.dart';
 import 'package:example_buttons/custom_calendar/custom_calendar.dart';
 import 'package:example_buttons/custom_calendar/week_calendar.dart';
@@ -22,7 +23,7 @@ class MainApp extends StatelessWidget with WidgetStatePropertyMixin {
         const Locale('en', 'US'),
         const Locale('en', 'GB'),
       ],
-      home: true
+      home: false
           ? Scaffold(
             appBar: AppBar(),
             body: CustomWeekCalendar(
@@ -45,7 +46,7 @@ class MainScreen extends StatelessWidget with WidgetStatePropertyMixin {
     const baseurl = String.fromEnvironment('BASE_URL');
     const authapi = String.fromEnvironment('AUTH_API');
     const citas = String.fromEnvironment('CITAS_API');
-    return Scaffold(
+    return  true ? TestNavBarW() : Scaffold(
       appBar: AppBar(),
       body: Center(
           child: Column(
@@ -67,6 +68,42 @@ class MainScreen extends StatelessWidget with WidgetStatePropertyMixin {
           ActionButton(text: 'Censo', onPressed: () {})
         ],
       )),
+    );
+  }
+}
+
+
+class TestNavBarW extends StatefulWidget {
+  const TestNavBarW({super.key});
+
+  @override
+  State<TestNavBarW> createState() => _TestNavBarWState();
+}
+
+class _TestNavBarWState extends State<TestNavBarW> {
+  bool isLoggedIn = true;
+  setLoginFalse() => setState(() => isLoggedIn = false);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Stack(
+        fit: StackFit.expand,
+        alignment: Alignment.topCenter,
+        children: [
+          ElevatedButton(
+              onPressed: () {
+               
+                setLoginFalse();
+                
+              },
+              child: const Text('Disable profile'))
+        ],
+      ),
+      bottomNavigationBar:
+          AppNavBar(
+            currentIndex: 0,
+            isLoggedIn: isLoggedIn, onSelected: (_) {}),
     );
   }
 }
