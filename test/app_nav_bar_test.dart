@@ -49,6 +49,23 @@ class _TestNavBarWState extends State<TestNavBarW> {
   setLoginFalse() => setState(() => isLoggedIn = !isLoggedIn);
   @override
   Widget build(BuildContext context) {
+    final items = <BottomNavigationBarItem>[
+      BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+      BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Cit.'),
+      BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Med.'),
+      BottomNavigationBarItem(
+          key: Key('Profile-BottomNavBar'),
+          icon: Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: CircleAvatar(
+              child: Text('PR'),
+            ),
+          ),
+          label: ''),
+    ];
+    if (!isLoggedIn) {
+      items.removeLast();
+    }
     return Scaffold(
       appBar: AppBar(),
       body: Stack(
@@ -65,7 +82,10 @@ class _TestNavBarWState extends State<TestNavBarW> {
         ],
       ),
       bottomNavigationBar: AppNavBar(
-          currentIndex: 0, isLoggedIn: isLoggedIn, onSelected: (_) {}),
+        onSelected: (p0) {},
+        currentIndex: 0,
+        items: items,
+      ),
     );
   }
 }

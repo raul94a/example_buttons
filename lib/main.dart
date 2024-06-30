@@ -1,15 +1,15 @@
 import 'package:example_buttons/bottom_navbar.dart/app_nav_bar.dart';
+import 'package:example_buttons/bottom_navbar.dart/home_screen.dart';
 import 'package:example_buttons/buttons/action_button.dart';
 import 'package:example_buttons/custom_calendar/custom_calendar.dart';
-import 'package:example_buttons/custom_calendar/week_calendar.dart';
 import 'package:example_buttons/extension/context_extensions.dart';
 import 'package:example_buttons/mixin/widget_state_property.dart';
-import 'package:example_buttons/stack_bckg/profile_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 class MainApp extends StatelessWidget with WidgetStatePropertyMixin {
@@ -32,7 +32,7 @@ class MainApp extends StatelessWidget with WidgetStatePropertyMixin {
                 onSelectedDate: (p0) {},
               ),
           )
-          : MainScreen(),
+          : const MainScreen(),
     );
   }
 }
@@ -46,7 +46,7 @@ class MainScreen extends StatelessWidget with WidgetStatePropertyMixin {
     const baseurl = String.fromEnvironment('BASE_URL');
     const authapi = String.fromEnvironment('AUTH_API');
     const citas = String.fromEnvironment('CITAS_API');
-    return  true ? TestNavBarW() : Scaffold(
+    return  true ? const HomeScreen()  : Scaffold(
       appBar: AppBar(),
       body: Center(
           child: Column(
@@ -73,37 +73,3 @@ class MainScreen extends StatelessWidget with WidgetStatePropertyMixin {
 }
 
 
-class TestNavBarW extends StatefulWidget {
-  const TestNavBarW({super.key});
-
-  @override
-  State<TestNavBarW> createState() => _TestNavBarWState();
-}
-
-class _TestNavBarWState extends State<TestNavBarW> {
-  bool isLoggedIn = true;
-  setLoginFalse() => setState(() => isLoggedIn = false);
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Stack(
-        fit: StackFit.expand,
-        alignment: Alignment.topCenter,
-        children: [
-          ElevatedButton(
-              onPressed: () {
-               
-                setLoginFalse();
-                
-              },
-              child: const Text('Disable profile'))
-        ],
-      ),
-      bottomNavigationBar:
-          AppNavBar(
-            currentIndex: 0,
-            isLoggedIn: isLoggedIn, onSelected: (_) {}),
-    );
-  }
-}

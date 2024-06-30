@@ -1,51 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AppNavBar extends StatefulWidget {
-  const AppNavBar(
-      {super.key,
-      required this.currentIndex,
-      required this.isLoggedIn,
-      required this.onSelected});
+class AuthState {
   final bool isLoggedIn;
-  final int currentIndex;
-  final void Function(int) onSelected;
+  AuthState({
+    required this.isLoggedIn,
+  });
 
-  @override
-  State<AppNavBar> createState() => _AppNavBarState();
+  AuthState copyWith({
+    bool? isLoggedIn,
+  }) {
+    return AuthState(
+      isLoggedIn: isLoggedIn ?? this.isLoggedIn,
+    );
+  }
 }
 
-class _AppNavBarState extends State<AppNavBar> {
-  var items = <BottomNavigationBarItem>[
-    const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-    const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Cit.'),
-    const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Med.'),
-    const BottomNavigationBarItem(
-        key: Key('Profile-BottomNavBar'),
-        icon: Padding(
-          padding: EdgeInsets.only(top: 20),
-          child: CircleAvatar(
-            child: Text('PR'),
-          ),
-        ),
-        label: ''),
-  ];
-  @override
-  void initState() {
-    super.initState();
-    debugPrint('$this initState with ${widget.isLoggedIn}');
-  }
+class AuthNotifier extends StateNotifier<AuthState> {
+  AuthNotifier(super._state);
+
+  void changeLogInStatus() =>
+      state = state.copyWith(isLoggedIn: !state.isLoggedIn);
+}
+
+final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
+  return AuthNotifier(AuthState(isLoggedIn: true));
+});
+
+class ConsumerAppNavBar extends ConsumerWidget {
+  const ConsumerAppNavBar({
+    super.key,
+    required this.onSelected,
+    required this.currentIndex,
+  });
+
+  final void Function(int) onSelected;
+  final int currentIndex;
 
   @override
-  void didUpdateWidget(covariant AppNavBar old) {
-    super.didUpdateWidget(old);
-    _maybeRemoveProfile();
-  }
+  Widget build(BuildContext context, ref) {
+    final isLoggedIn =
+        ref.watch(authProvider.select((state) => state.isLoggedIn));
 
-  _maybeRemoveProfile() {
-    if (!widget.isLoggedIn) {
-      items.removeLast();
-    } else {
-      items.add(const BottomNavigationBarItem(
+    var items = <BottomNavigationBarItem>[
+      const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+      const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Cit.'),
+      const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Med.'),
+      const BottomNavigationBarItem(
           key: Key('Profile-BottomNavBar'),
           icon: Padding(
             padding: EdgeInsets.only(top: 20),
@@ -53,22 +54,69 @@ class _AppNavBarState extends State<AppNavBar> {
               child: Text('PR'),
             ),
           ),
-          label: ''));
+          label: ''),
+    ];
+    if (!isLoggedIn) {
+      items.removeLast();
     }
+    return AppNavBar(
+      items: items,
+      currentIndex: currentIndex,
+      onSelected: onSelected,
+    );
+  }
+}
+
+class AppNavBar extends StatefulWidget {
+  const AppNavBar(
+      {super.key,
+      required this.currentIndex,
+      required this.onSelected,
+      required this.items});
+
+  final int currentIndex;
+  final void Function(int) onSelected;
+  final List<BottomNavigationBarItem> items;
+
+  @override
+  State<AppNavBar> createState() => _AppNavBarState();
+}
+
+class _AppNavBarState extends State<AppNavBar> {
+  BottomNavigationBarItem getProfile() {
+    return const BottomNavigationBarItem(
+        key: Key('Profile-BottomNavBar'),
+        icon: Padding(
+          padding: EdgeInsets.only(top: 20),
+          child: CircleAvatar(
+            child: Text('PR'),
+          ),
+        ),
+        label: '');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant AppNavBar old) {
+    super.didUpdateWidget(old);
   }
 
   @override
   Widget build(BuildContext context) {
-    print('rebuild: ${widget.isLoggedIn}');
     return BottomNavigationBar(
         landscapeLayout: BottomNavigationBarLandscapeLayout.spread,
         showSelectedLabels: true,
         showUnselectedLabels: true,
         currentIndex: widget.currentIndex,
+        onTap: widget.onSelected,
         unselectedItemColor: Colors.black,
         selectedLabelStyle: TextStyle(color: Colors.blue),
         unselectedLabelStyle: TextStyle(color: Colors.black),
         selectedItemColor: Colors.black,
-        items: items);
+        items: widget.items);
   }
 }
